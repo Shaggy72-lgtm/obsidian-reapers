@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Obsidian Reapers — Torn City Bounty Hunters</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Cinzel:wght@700;900&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --void: #080a0c;
+    --ash: #0d1117;
+    --obsidian: #111820;
+    --slate: #1a2332;
+    --border: #1f2d3d;
+    --muted: #3a4a5c;
+    --dim: #6a7f94;
+    --text: #c8d8e8;
+    --bright: #e8f4ff;
+    --blood: #8b1a1a;
+    --crimson: #c0392b;
+    --ember: #e74c3c;
+    --gold: #c9a84c;
+    --gold-dim: #7a5f28;
+    --cyan: #1a8fa0;
+    --cyan-bright: #22b8cc;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--void);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── SCANLINE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.03) 2px,
+      rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 40px;
+    background: rgba(8,10,12,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-brand {
+    font-family: 'Cinzel', serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--dim);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--gold); }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 120px 40px 80px;
+    position: relative;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 30%, rgba(139,26,26,0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 40% at 50% 80%, rgba(26,143,160,0.06) 0%, transparent 60%),
+      var(--void);
+  }
+
+  .hero-eyebrow {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 5px;
+    color: var(--blood);
+    text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+
+  .hero-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(48px, 9vw, 108px);
+    font-weight: 900;
+    line-height: 0.9;
+    color: var(--bright);
+    text-shadow: 0 0 80px rgba(139,26,26,0.4);
+    letter-spacing: -1px;
+    margin-bottom: 8px;
+  }
+  .hero-title span {
+    display: block;
+    color: var(--gold);
+    font-size: 0.55em;
+    letter-spacing: 12px;
+    text-shadow: 0 0 40px rgba(201,168,76,0.5);
+  }
+
+  .hero-divider {
+    width: 1px;
+    height: 60px;
+    background: linear-gradient(to bottom, var(--blood), transparent);
+    margin: 36px auto;
+  }
+
+  .hero-sub {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--dim);
+    max-width: 480px;
+    letter-spacing: 0.5px;
+    line-height: 1.7;
+    margin-bottom: 48px;
+  }
+
+  /* ── BOUNTY COUNTER ── */
+  .bounty-counter-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 52px;
+    padding: 24px 48px;
+    border: 1px solid var(--border);
+    background: rgba(13,17,23,0.8);
+    position: relative;
+  }
+  .bounty-counter-hero::before,
+  .bounty-counter-hero::after {
+    content: '';
+    position: absolute;
+    width: 8px; height: 8px;
+    border-color: var(--gold);
+    border-style: solid;
+  }
+  .bounty-counter-hero::before { top: -1px; left: -1px; border-width: 1px 0 0 1px; }
+  .bounty-counter-hero::after  { bottom: -1px; right: -1px; border-width: 0 1px 1px 0; }
+
+  .counter-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--dim);
+    text-transform: uppercase;
+  }
+  .counter-value {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 64px;
+    font-weight: 400;
+    color: var(--ember);
+    line-height: 1;
+    text-shadow: 0 0 30px rgba(231,76,60,0.5);
+    transition: all 0.4s ease;
+  }
+  .counter-value.loading { color: var(--muted); font-size: 32px; letter-spacing: 4px; }
+  .counter-sublabel {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+  }
+  .counter-pulse {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+  }
+  .pulse-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--cyan-bright);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.3; transform: scale(0.7); }
+  }
+  .pulse-text {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .hero-ctas { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+
+  .btn-primary {
+    display: inline-block;
+    padding: 14px 36px;
+    background: var(--blood);
+    color: var(--bright);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-decoration: none;
+    text-transform: uppercase;
+    border: 1px solid var(--crimson);
+    transition: all 0.2s;
+  }
+  .btn-primary:hover { background: var(--crimson); border-color: var(--ember); }
+
+  .btn-secondary {
+    display: inline-block;
+    padding: 14px 36px;
+    background: transparent;
+    color: var(--gold);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-decoration: none;
+    text-transform: uppercase;
+    border: 1px solid var(--gold-dim);
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover { background: rgba(201,168,76,0.08); border-color: var(--gold); }
+
+  /* ── SECTIONS ── */
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 40px; }
+
+  section {
+    padding: 100px 0;
+    border-top: 1px solid var(--border);
+  }
+  section:first-child { border-top: none; }
+
+  .section-eyebrow {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 5px;
+    color: var(--blood);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .section-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 700;
+    color: var(--bright);
+    line-height: 1.1;
+    margin-bottom: 20px;
+  }
+  .section-divider {
+    width: 40px; height: 1px;
+    background: var(--blood);
+    margin-bottom: 40px;
+  }
+
+  /* ── SERVICES ── */
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    margin-top: 8px;
+  }
+  .service-card {
+    background: var(--ash);
+    padding: 36px 32px;
+    position: relative;
+    transition: background 0.2s;
+  }
+  .service-card:hover { background: var(--obsidian); }
+  .service-tier {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--dim);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .service-name {
+    font-family: 'Cinzel', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+  .service-price {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 22px;
+    color: var(--ember);
+    margin-bottom: 14px;
+  }
+  .service-desc {
+    font-size: 14px;
+    color: var(--dim);
+    line-height: 1.6;
+  }
+
+  /* ── HOW IT WORKS ── */
+  .steps { display: flex; flex-direction: column; gap: 0; }
+  .payment-step {
+    display: flex;
+    gap: 28px;
+    align-items: flex-start;
+    padding: 32px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .payment-step:last-child { border-bottom: none; }
+  .step-num {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    color: var(--blood);
+    letter-spacing: 2px;
+    min-width: 32px;
+    padding-top: 2px;
+  }
+  .step-content strong {
+    display: block;
+    font-family: 'Cinzel', serif;
+    font-size: 17px;
+    color: var(--bright);
+    margin-bottom: 6px;
+  }
+  .step-content p { font-size: 15px; color: var(--dim); }
+
+  /* ── PAYMENT CONTACTS ── */
+  .payment-contacts { display: flex; flex-wrap: wrap; gap: 16px; }
+  .contact-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 28px;
+    background: var(--ash);
+    border: 1px solid var(--border);
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .contact-card:hover { border-color: var(--gold-dim); background: var(--obsidian); }
+  .contact-avatar {
+    font-size: 28px;
+    line-height: 1;
+  }
+  .contact-info strong {
+    display: block;
+    font-family: 'Cinzel', serif;
+    font-size: 16px;
+    color: var(--gold);
+  }
+  .contact-info span {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--dim);
+    letter-spacing: 1px;
+  }
+
+  /* ── RULES ── */
+  .rules-list { list-style: none; display: flex; flex-direction: column; gap: 0; }
+  .rules-list li {
+    display: flex;
+    gap: 20px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 15px;
+    color: var(--dim);
+    line-height: 1.6;
+  }
+  .rules-list li::before {
+    content: '//';
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--blood);
+    letter-spacing: 2px;
+    min-width: 24px;
+    padding-top: 2px;
+  }
+  .rules-list li strong { color: var(--text); }
+
+  /* ── RECRUITMENT ── */
+  #recruitment {
+    background: linear-gradient(to bottom, var(--void), var(--ash) 30%, var(--ash) 70%, var(--void));
+  }
+
+  .recruit-intro {
+    font-size: 16px;
+    color: var(--dim);
+    max-width: 560px;
+    line-height: 1.7;
+    margin-bottom: 48px;
+  }
+
+  .typeform-wrapper {
+    border: 1px solid var(--border);
+    background: var(--ash);
+    position: relative;
+    overflow: hidden;
+  }
+  .typeform-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(to right, var(--blood), var(--gold), var(--blood));
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 60px 40px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    background: var(--void);
+  }
+  .footer-logo {
+    font-family: 'Cinzel', serif;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 6px;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+  .footer-sub {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--muted);
+  }
+  .footer-sub a { color: var(--dim); text-decoration: none; }
+  .footer-sub a:hover { color: var(--gold); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 640px) {
+    nav { padding: 12px 20px; }
+    .nav-links { display: none; }
+    .wrap { padding: 0 20px; }
+    section { padding: 70px 0; }
+    .hero-ctas { flex-direction: column; align-items: center; }
+    .btn-primary, .btn-secondary { width: 100%; text-align: center; }
+    .bounty-counter-hero { padding: 20px 28px; }
+    .counter-value { font-size: 48px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-brand" href="#hero">Obsidian Reapers</a>
+  <ul class="nav-links">
+    <li><a href="#services">Services</a></li>
+    <li><a href="#how-it-works">Process</a></li>
+    <li><a href="#recruitment">Join</a></li>
+    <li><a href="#rules">Terms</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div id="hero">
+  <p class="hero-eyebrow">An Obsidian Accord Operation · Torn City</p>
+  <h1 class="hero-title">
+    Obsidian
+    <span>Reapers</span>
+  </h1>
+  <div class="hero-divider"></div>
+  <p class="hero-sub">Elite contract hunters operating out of Torn City. Every target. Every timezone. No questions asked.</p>
+
+  <!-- LIVE BOUNTY COUNTER -->
+  <div class="bounty-counter-hero">
+    <div class="counter-label">Contracts Fulfilled</div>
+    <div class="counter-value loading" id="bountyCount">—</div>
+    <div class="counter-sublabel">Total Completed Bounties</div>
+    <div class="counter-pulse">
+      <div class="pulse-dot"></div>
+      <div class="pulse-text" id="counterStatus">Connecting to worker...</div>
+    </div>
+  </div>
+
+  <div class="hero-ctas">
+    <a href="#how-it-works" class="btn-primary">Place a Contract</a>
+    <a href="#recruitment" class="btn-secondary">Join the Reapers</a>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<div id="services">
+<div class="wrap">
+<section>
+  <p class="section-eyebrow">What We Do</p>
+  <h2 class="section-title">Contract Tiers</h2>
+  <div class="section-divider"></div>
+
+  <div class="services-grid">
+    <div class="service-card">
+      <div class="service-tier">Tier I</div>
+      <div class="service-name">Standard Hit</div>
+      <div class="service-price">$1M</div>
+      <div class="service-desc">Single hospitalization on your specified target. Confirmed within 24 hours of payment. Ideal for personal grudges or one-time retaliation.</div>
+    </div>
+    <div class="service-card">
+      <div class="service-tier">Tier II</div>
+      <div class="service-name">War Support</div>
+      <div class="service-price">$3M</div>
+      <div class="service-desc">Sustained pressure during faction wars — repeated hits on priority targets to drain resources and keep them off the chain.</div>
+    </div>
+    <div class="service-card">
+      <div class="service-tier">Tier III — High Value</div>
+      <div class="service-name">High-Value Contract</div>
+      <div class="service-price">$4M–$5M</div>
+      <div class="service-desc">Extended campaign targeting strong or well-protected players. Priority queue. Coordinated multi-Reaper execution. Results guaranteed or contract extended.</div>
+    </div>
+  </div>
+</section>
+</div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div id="how-it-works">
+<div class="wrap">
+<section>
+  <p class="section-eyebrow">The Process</p>
+  <h2 class="section-title">How Contracts Work</h2>
+  <div class="section-divider"></div>
+
+  <div class="steps">
+    <div class="payment-step">
+      <span class="step-num">I</span>
+      <div class="step-content">
+        <strong>Send Payment</strong>
+        <p>Send your agreed payment to Shaagy72 via the link below. Note your target's name or XID in the trade message so we can match the payment to the contract.</p>
+      </div>
+    </div>
+    <div class="payment-step">
+      <span class="step-num">II</span>
+      <div class="step-content">
+        <strong>Submit Your Contract</strong>
+        <p>Provide the target's Torn name or XID, the type of hit you want, and any timing requirements. Anonymous — your identity is never disclosed to the operator or the target.</p>
+      </div>
+    </div>
+    <div class="payment-step">
+      <span class="step-num">III</span>
+      <div class="step-content">
+        <strong>Contract Confirmed</strong>
+        <p>Once payment is verified, your contract goes live and is assigned to an available Reaper. You receive confirmation when the hit is complete.</p>
+      </div>
+    </div>
+  </div>
+
+  <p style="font-size:11px; letter-spacing:2px; color:var(--blood); text-transform:uppercase; margin: 48px 0 20px;">Payment Contacts</p>
+  <div class="payment-contacts">
+    <a class="contact-card" href="https://www.torn.com/trade.php#step=start&userID=2221565" target="_blank" rel="noopener">
+      <div class="contact-avatar">☠</div>
+      <div class="contact-info">
+        <strong>Shaagy72</strong>
+        <span>Send Payment →</span>
+      </div>
+    </a>
+  </div>
+</section>
+</div>
+</div>
+
+<!-- RECRUITMENT -->
+<div id="recruitment">
+<div class="wrap">
+<section>
+  <p class="section-eyebrow">Join the Faction</p>
+  <h2 class="section-title">Become a Reaper</h2>
+  <div class="section-divider"></div>
+  <p class="recruit-intro">
+    Obsidian Accord is recruiting active, combat-ready players to join the Reapers. We offer coordinated war operations, faction support, and a tight-knit crew. If you hit hard and show up when it counts, apply below.
+  </p>
+
+  <div class="typeform-wrapper" style="padding: 40px 32px; text-align: center;">
+    <p style="font-family: Share Tech Mono, monospace; font-size: 13px; color: #6a7f94; letter-spacing: 1px; margin-bottom: 28px; line-height: 1.8;">
+      Ready to join the Reapers? Fill out your application below.<br>
+      <span style="color: #8b1a1a; font-size: 11px;">Takes less than 2 minutes.</span>
+    </p>
+    <a href="https://form.typeform.com/to/DEXYsxXZ" target="_blank" rel="noopener"
+       style="display: inline-block; padding: 16px 48px; background: #8b1a1a; color: #e8f4ff;
+              font-family: Share Tech Mono, monospace; font-size: 13px; letter-spacing: 3px;
+              text-decoration: none; text-transform: uppercase; border: 1px solid #c0392b;
+              transition: all 0.2s;">
+      Apply Now →
+    </a>
+    <p style="font-family: Share Tech Mono, monospace; font-size: 10px; color: #3a4a5c; letter-spacing: 2px; margin-top: 20px; text-transform: uppercase;">
+      Opens in a new tab
+    </p>
+  </div>
+</section>
+</div>
+</div>
+
+<!-- RULES -->
+<div id="rules">
+<div class="wrap">
+<section>
+  <p class="section-eyebrow">The Code</p>
+  <h2 class="section-title">Terms of Contract</h2>
+  <div class="section-divider"></div>
+  <ul class="rules-list">
+    <li><span><strong>Payment is non-refundable</strong> once a contract has been activated and the target has been engaged.</span></li>
+    <li><span><strong>Identity of the client is never disclosed</strong> to the operator, the target, or any third party — before, during, or after the contract.</span></li>
+    <li><span><strong>Contracts are fulfilled in order of priority tier</strong> and payment confirmation. High-Value contracts jump the queue.</span></li>
+    <li><span><strong>We do not guarantee hospital time</strong> on targets who are already hospitalized, traveling, or in federal jail at time of contract activation.</span></li>
+    <li><span><strong>We operate within Torn City's rules.</strong> This is an in-game service for the browser game Torn (torn.com). All transactions are in-game items and currency only.</span></li>
+    <li><span><strong>Disputes are handled by Obsidian Accord leadership.</strong> Contact Shaagy72 directly for any contract concerns.</span></li>
+  </ul>
+</section>
+</div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Obsidian Reapers</div>
+  <p class="footer-sub">
+    An Obsidian Accord operation &nbsp;·&nbsp;
+    <a href="https://www.torn.com/factions.php" target="_blank" rel="noopener">Torn City</a>
+    &nbsp;·&nbsp; In-game service only
+  </p>
+</footer>
+
+<!-- LIVE BOUNTY COUNTER SCRIPT -->
+<script>
+  const WORKER_URL = 'https://torn-bounty-board.pearcej29.workers.dev';
+  const el = document.getElementById('bountyCount');
+  const status = document.getElementById('counterStatus');
+
+  async function fetchBountyCount() {
+    try {
+      const res = await fetch(`${WORKER_URL}/stats`, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const count = data.completedBounties ?? data.completed ?? 0;
+
+      el.classList.remove('loading');
+      el.textContent = count.toString().padStart(3, '0');
+      status.textContent = 'Live · updates every 30s';
+    } catch (err) {
+      el.classList.add('loading');
+      el.textContent = '—';
+      status.textContent = 'Worker offline';
+      console.warn('Bounty counter fetch failed:', err);
+    }
+  }
+
+  // Initial load + poll every 30s
+  fetchBountyCount();
+  setInterval(fetchBountyCount, 30000);
+</script>
+
+</body>
+</html>
