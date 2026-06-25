@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Obsidian Reapers — Torn Bounty Hunters</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Share+Tech+Mono&family=Cinzel+Decorative:wght@700&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black:    #080608;
+    --obsidian: #0e0c10;
+    --crimson:  #8b0000;
+    --blood:    #cc2222;
+    --ember:    #d44;
+    --parchment:#d4c5a9;
+    --pale:     #ede0cc;
+    --dim:      #7a6a5a;
+    --border:   #2a1515;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--parchment);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ── NAVIGATION ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 40px;
+    background: linear-gradient(180deg, rgba(8,6,8,0.98) 0%, rgba(8,6,8,0.0) 100%);
+    border-bottom: 1px solid rgba(139,0,0,0.2);
+  }
+  .nav-logo {
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: 15px;
+    letter-spacing: 3px;
+    color: var(--blood);
+    text-transform: uppercase;
+    text-shadow: 0 0 20px rgba(204,34,34,0.4);
+  }
+  .nav-links { display: flex; gap: 28px; list-style: none; }
+  .nav-links a {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--dim);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--blood); }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 120px 40px 80px;
+    overflow: hidden;
+  }
+
+  /* Crosshair watermark */
+  .crosshair-bg {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px; height: 600px;
+    opacity: 0.06;
+    animation: rotate 60s linear infinite;
+    pointer-events: none;
+  }
+  @keyframes rotate { from { transform: translate(-50%,-50%) rotate(0deg); } to { transform: translate(-50%,-50%) rotate(360deg); } }
+
+  /* Blood drip from top */
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent 0%, var(--crimson) 30%, var(--blood) 50%, var(--crimson) 70%, transparent 100%);
+    box-shadow: 0 0 20px rgba(204,34,34,0.6);
+  }
+
+  /* Vignette */
+  .hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(8,6,8,0.85) 100%);
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    font-size: 11px;
+    letter-spacing: 6px;
+    color: var(--blood);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    position: relative; z-index: 1;
+  }
+
+  .hero-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(38px, 7vw, 80px);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: 4px;
+    color: var(--pale);
+    text-shadow:
+      0 0 40px rgba(204,34,34,0.3),
+      0 2px 4px rgba(0,0,0,0.9);
+    position: relative; z-index: 1;
+    margin-bottom: 8px;
+  }
+
+  .hero-title span {
+    color: var(--blood);
+    text-shadow:
+      0 0 30px rgba(204,34,34,0.7),
+      0 0 60px rgba(139,0,0,0.4);
+  }
+
+  .hero-divider {
+    width: 120px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--blood), transparent);
+    margin: 24px auto;
+    position: relative; z-index: 1;
+  }
+
+  .hero-sub {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: var(--dim);
+    text-transform: uppercase;
+    max-width: 480px;
+    position: relative; z-index: 1;
+    margin-bottom: 48px;
+    line-height: 2;
+  }
+
+  .hero-cta {
+    display: inline-block;
+    padding: 14px 36px;
+    border: 1px solid var(--blood);
+    color: var(--blood);
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-decoration: none;
+    position: relative; z-index: 1;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  }
+  .hero-cta:hover {
+    background: var(--blood);
+    color: var(--pale);
+    box-shadow: 0 0 24px rgba(204,34,34,0.5);
+  }
+
+  /* ── SECTION BASE ── */
+  section {
+    padding: 100px 40px;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  .section-eyebrow {
+    font-size: 10px;
+    letter-spacing: 5px;
+    color: var(--blood);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(22px, 3vw, 34px);
+    font-weight: 700;
+    color: var(--pale);
+    letter-spacing: 2px;
+    margin-bottom: 28px;
+    text-shadow: 0 0 20px rgba(204,34,34,0.15);
+  }
+
+  .section-divider {
+    width: 60px;
+    height: 1px;
+    background: var(--blood);
+    margin-bottom: 36px;
+    box-shadow: 0 0 8px rgba(204,34,34,0.4);
+  }
+
+  /* ── MISSION ── */
+  .mission-body {
+    font-size: 14px;
+    color: var(--parchment);
+    line-height: 1.9;
+    max-width: 700px;
+  }
+  .mission-body p + p { margin-top: 18px; }
+  .mission-body strong { color: var(--pale); font-weight: normal; letter-spacing: 0.5px; }
+
+  .mission-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    margin-top: 60px;
+    border: 1px solid var(--border);
+    background: var(--border);
+  }
+  .stat {
+    background: var(--obsidian);
+    padding: 30px 24px;
+    text-align: center;
+  }
+  .stat-number {
+    font-family: 'Cinzel', serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--blood);
+    display: block;
+    text-shadow: 0 0 20px rgba(204,34,34,0.4);
+  }
+  .stat-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--dim);
+    text-transform: uppercase;
+    margin-top: 6px;
+    display: block;
+  }
+
+  /* ── SERVICES ── */
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+  .service-card {
+    background: var(--obsidian);
+    padding: 36px 28px;
+    position: relative;
+    transition: background 0.2s;
+  }
+  .service-card:hover { background: #120a0a; }
+  .service-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 2px; height: 0;
+    background: var(--blood);
+    transition: height 0.3s;
+  }
+  .service-card:hover::before { height: 100%; }
+
+  .service-icon {
+    font-size: 22px;
+    margin-bottom: 16px;
+    display: block;
+  }
+  .service-name {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    letter-spacing: 2px;
+    color: var(--pale);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .service-desc {
+    font-size: 12px;
+    color: var(--dim);
+    line-height: 1.8;
+  }
+  .service-price {
+    margin-top: 16px;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--blood);
+  }
+
+  /* ── PAYMENT ── */
+  .payment-section { background: var(--obsidian); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .payment-section section { padding: 100px 40px; }
+
+  .payment-intro {
+    max-width: 620px;
+    color: var(--dim);
+    font-size: 13px;
+    line-height: 1.9;
+    margin-bottom: 48px;
+  }
+
+  .payment-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border: 1px solid var(--border);
+    margin-bottom: 48px;
+  }
+  .payment-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+    padding: 24px 28px;
+    border-bottom: 1px solid var(--border);
+  }
+  .payment-step:last-child { border-bottom: none; }
+  .step-num {
+    font-family: 'Cinzel', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--crimson);
+    opacity: 0.6;
+    min-width: 32px;
+    line-height: 1;
+    padding-top: 2px;
+  }
+  .step-content strong {
+    display: block;
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--pale);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    font-weight: 700;
+  }
+  .step-content p { font-size: 12px; color: var(--dim); line-height: 1.7; }
+
+  .payment-contacts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .contact-card {
+    border: 1px solid var(--border);
+    background: var(--black);
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    min-width: 260px;
+    flex: 1;
+    text-decoration: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .contact-card:hover {
+    border-color: var(--blood);
+    box-shadow: 0 0 16px rgba(204,34,34,0.2);
+  }
+  .contact-avatar {
+    width: 44px; height: 44px;
+    border: 1px solid var(--border);
+    background: var(--obsidian);
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .contact-info strong {
+    display: block;
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    color: var(--pale);
+    letter-spacing: 1px;
+    margin-bottom: 2px;
+  }
+  .contact-info span {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--blood);
+    text-transform: uppercase;
+  }
+
+  /* ── RULES ── */
+  .rules-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border: 1px solid var(--border);
+  }
+  .rules-list li {
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--dim);
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    line-height: 1.7;
+  }
+  .rules-list li:last-child { border-bottom: none; }
+  .rules-list li::before {
+    content: '//';
+    color: var(--blood);
+    font-size: 11px;
+    flex-shrink: 0;
+    padding-top: 2px;
+    opacity: 0.7;
+  }
+  .rules-list li strong { color: var(--parchment); }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 40px;
+    text-align: center;
+  }
+  .footer-logo {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 4px;
+    color: var(--crimson);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .footer-sub {
+    font-size: 11px;
+    color: var(--dim);
+    letter-spacing: 1px;
+  }
+  .footer-sub a { color: var(--dim); text-decoration: none; }
+  .footer-sub a:hover { color: var(--blood); }
+
+  @media (max-width: 640px) {
+    nav { padding: 14px 20px; }
+    .nav-links { display: none; }
+    section { padding: 60px 20px; }
+    .mission-stats { grid-template-columns: 1fr; }
+    .hero { padding: 100px 20px 60px; }
+    .crosshair-bg { width: 320px; height: 320px; }
+    .payment-section section { padding: 60px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Obsidian Reapers</div>
+  <ul class="nav-links">
+    <li><a href="#mission">Mission</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#payment">Hire Us</a></li>
+    <li><a href="#rules">Terms</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <svg class="crosshair-bg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="100" cy="100" r="95" fill="none" stroke="#cc2222" stroke-width="1.5"/>
+    <circle cx="100" cy="100" r="70" fill="none" stroke="#cc2222" stroke-width="0.8"/>
+    <circle cx="100" cy="100" r="40" fill="none" stroke="#cc2222" stroke-width="0.8"/>
+    <circle cx="100" cy="100" r="10" fill="none" stroke="#cc2222" stroke-width="1.5"/>
+    <circle cx="100" cy="100" r="2" fill="#cc2222"/>
+    <line x1="100" y1="0" x2="100" y2="82" stroke="#cc2222" stroke-width="1.5"/>
+    <line x1="100" y1="118" x2="100" y2="200" stroke="#cc2222" stroke-width="1.5"/>
+    <line x1="0" y1="100" x2="82" y2="100" stroke="#cc2222" stroke-width="1.5"/>
+    <line x1="118" y1="100" x2="200" y2="100" stroke="#cc2222" stroke-width="1.5"/>
+    <line x1="20" y1="20" x2="40" y2="40" stroke="#cc2222" stroke-width="0.8" opacity="0.5"/>
+    <line x1="160" y1="160" x2="180" y2="180" stroke="#cc2222" stroke-width="0.8" opacity="0.5"/>
+    <line x1="180" y1="20" x2="160" y2="40" stroke="#cc2222" stroke-width="0.8" opacity="0.5"/>
+    <line x1="20" y1="180" x2="40" y2="160" stroke="#cc2222" stroke-width="0.8" opacity="0.5"/>
+    <line x1="60" y1="5" x2="65" y2="18" stroke="#cc2222" stroke-width="0.5" opacity="0.4"/>
+    <line x1="140" y1="5" x2="135" y2="18" stroke="#cc2222" stroke-width="0.5" opacity="0.4"/>
+    <line x1="60" y1="195" x2="65" y2="182" stroke="#cc2222" stroke-width="0.5" opacity="0.4"/>
+    <line x1="140" y1="195" x2="135" y2="182" stroke="#cc2222" stroke-width="0.5" opacity="0.4"/>
+    <line x1="5" y1="60" x2="18" y2="65" stroke="#cc2222" stroke-width="0.5" opacity="0.4"/>
+    <line x1="5" y1="140" x2="18" y2="135" stroke="#cc2222" stroke-width="0.5" opacity="0.4"/>
+    <line x1="195" y1="60" x2="182" y2="65" stroke="#cc2222" stroke-width="0.5" opacity="0.4"/>
+    <line x1="195" y1="140" x2="182" y2="135" stroke="#cc2222" stroke-width="0.5" opacity="0.4"/>
+  </svg>
+
+  <p class="hero-eyebrow">Obsidian Accord — Torn City</p>
+  <h1 class="hero-title">Obsidian<br/><span>Reapers</span></h1>
+  <div class="hero-divider"></div>
+  <p class="hero-sub">Torn City's premier bounty unit.<br/>Targets acquired. Contracts fulfilled. No loose ends.</p>
+  <a href="#payment" class="hero-cta">Hire a Reaper</a>
+</div>
+
+<!-- MISSION -->
+<div id="mission">
+<section>
+  <p class="section-eyebrow">Who We Are</p>
+  <h2 class="section-title">The Mission</h2>
+  <div class="section-divider"></div>
+  <div class="mission-body">
+    <p>
+      The <strong>Obsidian Reapers</strong> are the enforcement arm of the Obsidian Accord — a disciplined unit of veteran Torn City operators who take contracts that others won't touch. We don't ask why. We deliver results.
+    </p>
+    <p>
+      Whether someone crossed you in a war, hit you while you slept, or simply needs to be reminded that Torn City has consequences — we are the consequence. Every contract is handled with precision, tracked from payment to completion, and confirmed before we close the file.
+    </p>
+    <p>
+      <strong>We are not mercenaries without a code.</strong> We operate on trust, discretion, and an unblemished record of delivery. Your name stays out of it. The target never knows who sent us.
+    </p>
+  </div>
+
+  <div class="mission-stats">
+    <div class="stat">
+      <span class="stat-number">100%</span>
+      <span class="stat-label">Contract Completion</span>
+    </div>
+    <div class="stat">
+      <span class="stat-number">3</span>
+      <span class="stat-label">Service Tiers</span>
+    </div>
+    <div class="stat">
+      <span class="stat-number">0</span>
+      <span class="stat-label">Loose Ends</span>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- SERVICES -->
+<div id="services" style="background: var(--obsidian); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+<section>
+  <p class="section-eyebrow">What We Do</p>
+  <h2 class="section-title">Services</h2>
+  <div class="section-divider"></div>
+  <div class="services-grid">
+    <div class="service-card">
+      <span class="service-icon">⚔</span>
+      <div class="service-name">Retaliation</div>
+      <p class="service-desc">Someone hit you while you were down. We find them, we return the favor — with interest. Mugs, hospitalizations, chains. Specify your preference.</p>
+      <p class="service-price">From 1 Xanax</p>
+    </div>
+    <div class="service-card">
+      <span class="service-icon">💀</span>
+      <div class="service-name">War Contracts</div>
+      <p class="service-desc">Active faction war and need priority targets taken out? We embed with your faction's objectives and systematically dismantle their key players.</p>
+      <p class="service-price">From 3 Xanax</p>
+    </div>
+    <div class="service-card">
+      <span class="service-icon">🎯</span>
+      <div class="service-name">Just Cause</div>
+      <p class="service-desc">No justification required. You have a name. We have operators. Whether it's a personal grudge, a power move, or Tuesday — we don't judge.</p>
+      <p class="service-price">From 1 Xanax</p>
+    </div>
+    <div class="service-card">
+      <span class="service-icon">👑</span>
+      <div class="service-name">High-Value Targets</div>
+      <p class="service-desc">Leaders, repeat offenders, heavily defended players. Premium contracts for premium problems. Our best operators. Our highest priority.</p>
+      <p class="service-price">From 5 Xanax</p>
+    </div>
+    <div class="service-card">
+      <span class="service-icon">🔗</span>
+      <div class="service-name">Chain Disruption</div>
+      <p class="service-desc">Need to break an enemy chain at a critical moment? Precision timing attacks on active chains. Coordinated, fast, effective.</p>
+      <p class="service-price">From 2 Xanax</p>
+    </div>
+    <div class="service-card">
+      <span class="service-icon">🛡</span>
+      <div class="service-name">Custom Contracts</div>
+      <p class="service-desc">Have something specific in mind that doesn't fit a category? Reach out directly. If it can be done in Torn, we have someone who can do it.</p>
+      <p class="service-price">Price on request</p>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- PAYMENT / HIRE -->
+<div id="payment" class="payment-section">
+<section>
+  <p class="section-eyebrow">Engage Our Services</p>
+  <h2 class="section-title">Hire a Reaper</h2>
+  <div class="section-divider"></div>
+  <p class="payment-intro">
+    All contracts are handled through our in-game bounty board, accessible to registered members. Payment is in Xanax — the currency of consequence in Torn City. Follow the steps below to engage.
+  </p>
+
+  <div class="payment-steps">
+    <div class="payment-step">
+      <span class="step-num">I</span>
+      <div class="step-content">
+        <strong>Send Payment</strong>
+        <p>Transfer the agreed Xanax amount to one of our payment contacts below. Note your target's name in the trade message so we can match the payment to the contract.</p>
+      </div>
+    </div>
+    <div class="payment-step">
+      <span class="step-num">II</span>
+      <div class="step-content">
+        <strong>Submit Your Contract</strong>
+        <p>Provide the target's Torn name or XID, the type of hit you want, and any timing requirements. Anonymous — your identity is never disclosed to the operator or the target.</p>
+      </div>
+    </div>
+    <div class="payment-step">
+      <span class="step-num">III</span>
+      <div class="step-content">
+        <strong>Contract Confirmed</strong>
+        <p>Once payment is verified, your contract goes live and is assigned to an available Reaper. You'll receive confirmation when the hit is complete.</p>
+      </div>
+    </div>
+  </div>
+
+  <p style="font-size:11px; letter-spacing:2px; color:var(--blood); text-transform:uppercase; margin-bottom:20px;">Payment Contacts</p>
+  <div class="payment-contacts">
+    <a class="contact-card" href="https://www.torn.com/trade.php#step=start&userID=2221565" target="_blank" rel="noopener">
+      <div class="contact-avatar">☠</div>
+      <div class="contact-info">
+        <strong>Shaagy72</strong>
+        <span>Send Payment →</span>
+      </div>
+    </a>
+  </div>
+</section>
+</div>
+
+<!-- RULES / TERMS -->
+<div id="rules">
+<section>
+  <p class="section-eyebrow">The Code</p>
+  <h2 class="section-title">Terms of Contract</h2>
+  <div class="section-divider"></div>
+  <ul class="rules-list">
+    <li><span><strong>Payment is non-refundable</strong> once a contract has been activated and the target has been engaged.</span></li>
+    <li><span><strong>Identity of the client is never disclosed</strong> to the operator, the target, or any third party — before, during, or after the contract.</span></li>
+    <li><span><strong>Contracts are fulfilled in order of priority tier</strong> and payment confirmation. High-Value contracts jump the queue.</span></li>
+    <li><span><strong>We do not guarantee hospital time</strong> on targets who are already hospitalized, traveling, or in a federal jail at time of contract activation.</span></li>
+    <li><span><strong>We operate within Torn City's rules.</strong> This is an in-game service for the browser game Torn (torn.com). All transactions are in-game items and currency only.</span></li>
+    <li><span><strong>Disputes are handled by Obsidian Accord leadership.</strong> Contact Shaagy72 directly for any contract concerns.</span></li>
+  </ul>
+</section>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Obsidian Reapers</div>
+  <p class="footer-sub">
+    An Obsidian Accord operation &nbsp;·&nbsp;
+    <a href="https://www.torn.com/factions.php" target="_blank" rel="noopener">Torn City</a>
+    &nbsp;·&nbsp; In-game service only
+  </p>
+</footer>
+
+</body>
+</html>
